@@ -23,10 +23,22 @@ jobs:
       - name: Gerar assets
         run: python3 tools/generate_assets.py
 
+      - name: Validar BMP e JSON
+        run: python3 tools/validate_assets.py
+
+      - name: Verificar camaras (BFS)
+        run: python3 tools/solve_verify.py
+
       - name: Compilar ROM
-        run: make -j2
+        run: make -j2 2>&1 | tee build.log
+
+      - name: Auditar ROM
+        run: python3 tools/rom_audit.py sokoban4.gba build/sokoban4.elf | tee rom_report.txt
 
       - uses: actions/upload-artifact@v4
         with:
           name: sokoban4-gba-rom
-          path: sokoban4.gba
+          path: |
+            sokoban4.gba
+            build.log
+            rom_report.txt
