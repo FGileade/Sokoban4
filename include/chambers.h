@@ -73,7 +73,7 @@ constexpr ChamberDef CHAMBERS[NUM_CHAMBERS] = {
         3, {{5, 5}, {7, 4}, {9, 5}, {0, 0}, {0, 0}, {0, 0}},
         2, {{2, 7}, {12, 7}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
         2, {{7, 2}, {7, 6}, {0, 0}, {0, 0}},
-        1, {{{5, 3, 1, 0, EnemyKind::Leeper}, {}, {}}}
+        1, {{5, 3, 1, 0, EnemyKind::Leeper}, {}, {}}
     },
     // 2. AGUA (azul): empurre blocos de pedra na agua para formar pontes, polvos roxos
     {
@@ -95,7 +95,7 @@ constexpr ChamberDef CHAMBERS[NUM_CHAMBERS] = {
         5, {{3, 4}, {3, 5}, {3, 6}, {2, 3}, {2, 7}, {0, 0}},
         0, {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
         2, {{3, 2}, {11, 7}, {0, 0}, {0, 0}},
-        2, {{{10, 2, 0, 1, EnemyKind::Octopus}, {13, 7, 0, -1, EnemyKind::Octopus}, {}}}
+        2, {{10, 2, 0, 1, EnemyKind::Octopus}, {13, 7, 0, -1, EnemyKind::Octopus}, {}}
     },
     // 3. LAVA (vermelho/laranja): piso de lava, 2 chamas inimigas bloqueaveis
     {
@@ -117,7 +117,7 @@ constexpr ChamberDef CHAMBERS[NUM_CHAMBERS] = {
         3, {{4, 4}, {4, 5}, {9, 3}, {0, 0}, {0, 0}, {0, 0}},
         0, {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
         2, {{7, 2}, {7, 7}, {0, 0}, {0, 0}},
-        2, {{{5, 2, 1, 0, EnemyKind::Flame}, {9, 6, -1, 0, EnemyKind::Flame}, {}}}
+        2, {{5, 2, 1, 0, EnemyKind::Flame}, {9, 6, -1, 0, EnemyKind::Flame}, {}}
     },
     // 4. GELO (azul claro): blocos de gelo deslizantes e bolas de espinho azuis
     {
@@ -139,7 +139,7 @@ constexpr ChamberDef CHAMBERS[NUM_CHAMBERS] = {
         4, {{4, 2}, {10, 2}, {4, 7}, {10, 7}, {0, 0}, {0, 0}},
         2, {{7, 4}, {7, 6}, {0, 0}, {0, 0}, {0, 0}, {0, 0}},
         2, {{7, 5}, {2, 2}, {0, 0}, {0, 0}},
-        2, {{{5, 3, 1, 0, EnemyKind::Spiky}, {9, 7, -1, 0, EnemyKind::Spiky}, {}}}
+        2, {{5, 3, 1, 0, EnemyKind::Spiky}, {9, 7, -1, 0, EnemyKind::Spiky}, {}}
     }
 };
 
