@@ -1,9 +1,17 @@
-# Sokoban4 (GBA / Butano)
+# Sokoban4 (Adventures of Lolo 3 - GBA / Butano)
 
-Projeto inicial para Game Boy Advance (engine Butano) com compilação 100% na nuvem via GitHub Actions.
+Reconstrução técnica para Game Boy Advance (engine Butano) com 4 câmaras elementais jogáveis, sprites animados 4bpp (BGR555) e compilação automática na nuvem via GitHub Actions.
 
-## Como compilar na nuvem
-1. Suba estes arquivos para a branch `main` do repositório `FGileade/Sokoban4`.
-2. Acesse a aba **Actions** no GitHub.
-3. Clique no workflow **Build GBA ROM (Butano)** e baixe o artefato **`sokoban4-gba-rom`**.
-4. Abra o arquivo `sokoban4.gba` no emulador **mGBA**.
+## Câmaras
+1. **Pântano (Verde Musgo):** Blocos de pedra, rochas fixas, inimigo Leeper, corações e chave.
+2. **Água (Azul):** Empurre blocos de pedra na água para formar pontes; polvos roxos patrulhando.
+3. **Lava (Vermelho/Laranja):** Passarelas sobre lava e 2 chamas inimigas bloqueáveis.
+4. **Gelo (Azul Claro):** Blocos de gelo deslizantes e bolas de espinho azuis.
+
+## Controles (mGBA / GBA)
+- **D-Pad:** Mover Lolo / empurrar blocos
+- **SELECT ou R:** Reiniciar câmara atual
+- **L:** Avançar para a próxima câmara (teste rápido)
+
+## Compilação na Nuvem
+Basta enviar os arquivos para a branch `main` e baixar o artefato **`sokoban4-gba-rom`** na aba **Actions**.
