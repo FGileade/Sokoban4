@@ -1,6 +1,7 @@
 TARGET      := sokoban4
 BUILD       := build
 LIBBUTANO   := butano/butano
+LIBBUTANOABS:= $(realpath $(LIBBUTANO))
 PYTHON      := python3
 SOURCES     := src
 INCLUDES    := include
