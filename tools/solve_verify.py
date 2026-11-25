@@ -72,16 +72,20 @@ def parse_chambers(path: Path):
     return chambers
 
 
-MAX_STATES = 1_500_000
+MAX_STATES = 2_000_000
 
 
 def solve(ch: dict) -> int | None:
+    """BFS sobre empurroes (Sokoban classico): o estado guarda a regiao
+    alcancavel do jogador, nao cada passo. Retorna n. de empurroes,
+    None se sem solucao, -1 se atingiu o limite de estados."""
     grid = ch["grid"]
     rocks = ch["rocks"]
     hearts = ch["hearts"]
     all_hearts = (1 << len(hearts)) - 1
     lala = ch["lala_pos"]
     chest = ch["chest_pos"]
+    key_pos = ch["key_pos"]
 
     def can_walk(bridges, x, y):
         if x < 0 or x >= 15 or y < 0 or y >= 10:
@@ -91,64 +95,83 @@ def solve(ch: dict) -> int | None:
         c = grid[y][x]
         return c == "." or (c == "~" and (x, y) in bridges)
 
-    init_blocks = tuple((x, y) for x, y in ch["blocks"])
-    start = (ch["lolo_start"][0], ch["lolo_start"][1], init_blocks, frozenset(), 0, not ch["has_key"])
+    def region(start, blocks, bridges):
+        bset = set(blocks)
+        seen_r = {start}
+        stack = [start]
+        while stack:
+            x, y = stack.pop()
+            for dx, dy in DIRS:
+                n = (x + dx, y + dy)
+                if n in seen_r or n in bset or not can_walk(bridges, *n):
+                    continue
+                seen_r.add(n)
+                stack.append(n)
+        return seen_r
+
+    def collect(reg, hmask, key_ok):
+        for hi, hp in enumerate(hearts):
+            if hp in reg:
+                hmask |= 1 << hi
+        if key_pos in reg:
+            key_ok = True
+        return hmask, key_ok
+
+    blocks0 = tuple(sorted(ch["blocks"]))
+    bridges0 = frozenset()
+    pos0 = tuple(ch["lolo_start"])
+    reg0 = region(pos0, blocks0, bridges0)
+    h0, k0 = collect(reg0, 0, not ch["has_key"])
+    start = (min(reg0), blocks0, bridges0, h0, k0)
     seen = {start}
-    q = deque([(start, 0)])
+    q = deque([(start, pos0, 0)])
 
     while q:
-        (px, py, blocks, bridges, hmask, key_ok), steps = q.popleft()
-        chest_open = key_ok and (hmask == all_hearts)
-        if chest_open and (px, py) == chest:
-            return steps
-
-        for dx, dy in DIRS:
-            nx, ny = px + dx, py + dy
-            if not can_walk(bridges, nx, ny):
-                continue
-
-            new_blocks = list(blocks)
-            new_bridges = set(bridges)
-
-            if (nx, ny) in blocks:
-                idx = blocks.index((nx, ny))
-                bx, by = nx + dx, ny + dy
+        (_, blocks, bridges, hmask, key_ok), pos, pushes = q.popleft()
+        reg = region(pos, blocks, bridges)
+        if key_ok and hmask == all_hearts and chest in reg:
+            return pushes
+        for bidx, (bx0, by0) in enumerate(blocks):
+            for dx, dy in DIRS:
+                # jogador precisa alcancar a celula oposta ao destino do empurrao
+                if (bx0 - dx, by0 - dy) not in reg:
+                    continue
+                bx, by = bx0 + dx, by0 + dy
                 if bx < 0 or bx >= 15 or by < 0 or by >= 10 or (bx, by) in rocks:
                     continue
                 if (bx, by) in blocks or (bx, by) == lala or (bx, by) == chest:
                     continue
-
+                new_blocks = list(blocks)
+                new_bridges = set(bridges)
                 dest_ch = grid[by][bx]
                 if dest_ch == "~" and (bx, by) not in bridges:
                     if not ch["water_bridges"]:
                         continue
-                    new_blocks.pop(idx)
+                    new_blocks.pop(bidx)
                     new_bridges.add((bx, by))
                 elif dest_ch == "." or (bx, by) in bridges:
                     fx, fy = bx, by
                     if ch["ice_slides"]:
                         while True:
                             sx, sy = fx + dx, fy + dy
-                            if not can_walk(bridges, sx, sy) or (sx, sy) in new_blocks or (sx, sy) == lala or (sx, sy) == chest:
+                            if (not can_walk(bridges, sx, sy) or (sx, sy) in new_blocks
+                                    or (sx, sy) == lala or (sx, sy) == chest):
                                 break
                             fx, fy = sx, sy
-                    new_blocks[idx] = (fx, fy)
+                    new_blocks[bidx] = (fx, fy)
                 else:
                     continue
-
-            nhmask = hmask
-            for hi, hp in enumerate(hearts):
-                if (nx, ny) == hp:
-                    nhmask |= (1 << hi)
-            nkey = key_ok or ((nx, ny) == ch["key_pos"])
-
-            nxt = (nx, ny, tuple(sorted(new_blocks)), frozenset(new_bridges), nhmask, nkey)
-            if nxt not in seen:
-                if len(seen) >= MAX_STATES:
-                    return -1
-                seen.add(nxt)
-                q.append((nxt, steps + 1))
-
+                npos = (bx0, by0)  # jogador ocupa a celula original do bloco
+                nb = tuple(sorted(new_blocks))
+                nbr = frozenset(new_bridges)
+                nreg = region(npos, nb, nbr)
+                nh, nk = collect(nreg, hmask, key_ok)
+                st = (min(nreg), nb, nbr, nh, nk)
+                if st not in seen:
+                    if len(seen) >= MAX_STATES:
+                        return -1
+                    seen.add(st)
+                    q.append((st, npos, pushes + 1))
     return None
 
 
@@ -167,7 +190,7 @@ def main() -> int:
             print(f"[FALHA] Camara {ch['index']}: sem solucao!")
             failed = True
         else:
-            print(f"[OK]    Camara {ch['index']}: solucionavel em {steps} passo(s) minimos.")
+            print(f"[OK]    Camara {ch['index']}: solucionavel em {steps} empurrao(oes) minimos.")
     return 1 if failed else 0
 
 
